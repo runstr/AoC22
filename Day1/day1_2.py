@@ -40,4 +40,5 @@ def get_most_calories():
 @timeexecution
 def execution():
     answer = get_most_calories()
+    print(answer)
     #submit(answer, part="b", day=1, year=2022)
