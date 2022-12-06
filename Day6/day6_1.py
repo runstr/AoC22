@@ -8,8 +8,8 @@ filepath = pathlib.Path(__file__).parent.resolve()
 def get_my_answer():
     letters = []
     for i, letter in enumerate(load_data(filepath, example=False)):
-        if i >= 4 and len(set(letters[i-4:i])) == 4:
-            return len(letters)
+        if len(set(letters[i-4:i])) == 4:
+            return i
         letters.append(letter)
 
 

@@ -5,11 +5,7 @@ filepath = pathlib.Path(__file__).parent.resolve()
 
 
 def get_my_answer():
-    letters = []
-    for i, letter in enumerate(load_data(filepath, example=False)):
-        if i >= 14 and len(set(letters[i-14:i])) == 14:
-            return len(letters)
-        letters.append(letter)
+    return list(map(lambda x: [i for i in [i if len(set(x[i-14:i])) == 14 else x.append(letter) for i, letter in enumerate(open(str(filepath)+"\\input.txt", "r").readline())] if i is not None], [[]]))
 
 
 @timeexecution
