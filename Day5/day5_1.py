@@ -6,7 +6,7 @@ filepath = pathlib.Path(__file__).parent.resolve()
 
 
 def get_my_answer():
-    data = load_data(filepath, example=True).split("\n\n")
+    data = load_data(filepath, example=False).split("\n\n")
     crates ={}
     for line in data[0].split("\n"):
         stack = 1
@@ -24,11 +24,12 @@ def get_my_answer():
         crate1 = int(crate1.strip(" "))
         crate2 = int(crate2.strip(" "))
         number = int(number.strip(" "))
-        crates[crate2] = crates[crate1][:number+1] + crates[crate2]
+        crates[crate2] = crates[crate1][:number][::-1] + crates[crate2]
         crates[crate1] = crates[crate1][number:]
-
-
-    return crates
+    my_answer = ""
+    for i in range(1, len(crates)+1):
+        my_answer+=crates[i][0]
+    return my_answer
 
 
 @timeexecution
