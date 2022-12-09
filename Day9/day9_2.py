@@ -8,36 +8,36 @@ def move_tail_closer(head_position, tail_position, all_tail_positions, tail):
     dx = head_position[0]-tail_position[0]
     dy = head_position[1]-tail_position[1]
     if dx > 1:
-        if dy==1:
+        if dy>=1:
             tail_position = (tail_position[0]+1, tail_position[1]+1)
-        elif dy==-1:
+        elif dy<=-1:
             tail_position = (tail_position[0]+1, tail_position[1]-1)
         elif dy==0:
             tail_position = (tail_position[0] + 1, tail_position[1])
         else:
             raise Exception("Something went wrong in movin tail")
     elif dy>1:
-        if dx==1:
+        if dx>=1:
             tail_position = (tail_position[0]+1, tail_position[1]+1)
-        elif dx==-1:
+        elif dx<=-1:
             tail_position = (tail_position[0]-1, tail_position[1]+1)
         elif dx==0:
             tail_position = (tail_position[0], tail_position[1]+1)
         else:
             raise Exception("Something went wrong in movin tail")
     elif dx<-1:
-        if dy==1:
+        if dy>=1:
             tail_position = (tail_position[0]-1, tail_position[1]+1)
-        elif dy==-1:
+        elif dy<=-1:
             tail_position = (tail_position[0]-1, tail_position[1]-1)
         elif dy==0:
             tail_position = (tail_position[0]-1, tail_position[1])
         else:
             raise Exception("Something went wrong in moving tail")
     elif dy<-1:
-        if dx==1:
+        if dx>=1:
             tail_position = (tail_position[0]+1, tail_position[1]-1)
-        elif dx==-1:
+        elif dx<=-1:
             tail_position = (tail_position[0]-1, tail_position[1]-1)
         elif dx==0:
             tail_position = (tail_position[0], tail_position[1]-1)
@@ -78,7 +78,7 @@ def move_head(movement, head_position, tail_position, all_tail_positions):
 
 
 def get_my_answer():
-    data = load_data_as_lines(filepath, example=True)
+    data = load_data_as_lines(filepath, example=False)
     all_knot_positions = {(0, 0)}
     head_position = (0, 0)
     knot_positions = [(0, 0) for _ in range(9)]
