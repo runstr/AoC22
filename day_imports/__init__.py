@@ -1,3 +1,4 @@
+from Day11 import * 
 from Day10 import * 
 from Day9 import * 
 from Day8 import * 
@@ -20,3 +21,4 @@ __all__ += ["day7_1", "day7_2"]
 __all__ += ["day8_1", "day8_2"]
 __all__ += ["day9_1", "day9_2"]
 __all__ += ["day10_1", "day10_2"]
+__all__ += ["day11_1", "day11_2"]
