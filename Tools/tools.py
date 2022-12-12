@@ -44,6 +44,19 @@ def load_data_as_int(filepath, example=False):
             input_full.append(input_line_list)
     return input_full
 
+def load_data_as_chars(filepath, example=False):
+    if example:
+        filepath = str(filepath)+"\\example.txt"
+    else:
+        filepath = str(filepath)+"\\input.txt"
+    input_full = []
+    with open(filepath, "r") as f:
+        for input_line in f.read().splitlines():
+            input_line_list = []
+            for i in input_line:
+                input_line_list.append(i)
+            input_full.append(input_line_list)
+    return input_full
 
 def get_todays_date():
     return str(date.today().day)
