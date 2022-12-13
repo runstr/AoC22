@@ -5,9 +5,50 @@ from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
 
 
+def compare_list(left, right, not_correct_order):
+    for i in range(len(left)):
+        if type(left[i]) == list and type(right[i]) == int:
+            right = [right[i]]
+            not_correct_order = compare_list(left[i], right, False)
+            if not_correct_order:
+                return not_correct_order
+            else:
+                continue
+        elif type(left[i]) == int and type(right[i]) == list:
+            left = [left]
+            not_correct_order=compare_list(left, right[i], False)
+            if not_correct_order:
+                return not_correct_order
+            else:
+                continue
+        elif type(left[i]) == list and type(right[i]) == list:
+            not_correct_order = compare_list(left[i], right[i], False)
+            if not_correct_order:
+                return not_correct_order
+            else:
+                continue
+        if len(left) < len(right):
+            not_correct_order = True
+            return not_correct_order
+        if left[i]>right[i]:
+            return not_correct_order
+    return not_correct_order
+
+
+
+
 def get_my_answer():
-    my_answer = load_data(filepath, example=True)
-    return my_answer
+    data = load_data(filepath, example=True).split("\n\n")
+    sum_indices=0
+    for i, packet in enumerate(data):
+        left, right = packet.split("\n")
+        left = eval(left)
+        right = eval(right)
+        not_correct_order = compare_list(left, right, False)
+        if not_correct_order:
+            sum_indices+=(i+1)
+
+    return 0
 
 
 @timeexecution
