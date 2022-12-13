@@ -6,7 +6,11 @@ filepath = pathlib.Path(__file__).parent.resolve()
 
 
 def compare_list(left, right, not_correct_order):
-    for i in range(len(left)):
+    for i in range(len(right)):
+        try:
+            a = left[i]
+        except IndexError:
+            return True
         if type(left[i]) == list and type(right[i]) == int:
             right = [right[i]]
             not_correct_order = compare_list(left[i], right, False)
@@ -15,7 +19,7 @@ def compare_list(left, right, not_correct_order):
             else:
                 continue
         elif type(left[i]) == int and type(right[i]) == list:
-            left = [left]
+            left = [left[i]]
             not_correct_order=compare_list(left, right[i], False)
             if not_correct_order:
                 return not_correct_order
@@ -38,7 +42,7 @@ def compare_list(left, right, not_correct_order):
 
 
 def get_my_answer():
-    data = load_data(filepath, example=True).split("\n\n")
+    data = load_data(filepath, example=False).split("\n\n")
     sum_indices=0
     for i, packet in enumerate(data):
         left, right = packet.split("\n")
@@ -47,8 +51,9 @@ def get_my_answer():
         not_correct_order = compare_list(left, right, False)
         if not_correct_order:
             sum_indices+=(i+1)
+        print(sum_indices)
 
-    return 0
+    return sum_indices
 
 
 @timeexecution
