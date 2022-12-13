@@ -5,40 +5,38 @@ from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
 
 
-def compare_list(left, right, not_correct_order):
-    for i in range(len(right)):
+def compare_list(left, right):
+    for i in range(len(left)):
         try:
-            a = left[i]
+            if type(left[i]) == list and type(right[i]) == int:
+                return_value = compare_list(left[i], [right[i]])
+                if return_value == None:
+                    continue
+                else:
+                    return return_value
+            elif type(left[i]) == int and type(right[i]) == list:
+                return_value =  compare_list([left[i]], right[i])
+                if return_value == None:
+                    continue
+                else:
+                    return return_value
+            elif type(left[i]) == list and type(right[i]) == list:
+                return_value = compare_list(left[i], right[i])
+                if return_value == None:
+                    continue
+                else:
+                    return return_value
+            if left[i] > right[i]:
+                return False
+            elif left[i] < right[i]:
+                return True
         except IndexError:
-            return True
-        if type(left[i]) == list and type(right[i]) == int:
-            right = [right[i]]
-            not_correct_order = compare_list(left[i], right, False)
-            if not_correct_order:
-                return not_correct_order
-            else:
-                continue
-        elif type(left[i]) == int and type(right[i]) == list:
-            left = [left[i]]
-            not_correct_order=compare_list(left, right[i], False)
-            if not_correct_order:
-                return not_correct_order
-            else:
-                continue
-        elif type(left[i]) == list and type(right[i]) == list:
-            not_correct_order = compare_list(left[i], right[i], False)
-            if not_correct_order:
-                return not_correct_order
-            else:
-                continue
-        if len(left) < len(right):
-            not_correct_order = True
-            return not_correct_order
-        if left[i]>right[i]:
-            return not_correct_order
-    return not_correct_order
-
-
+            return False
+    try:
+        right[len(left)]
+    except IndexError:
+        return None
+    return True
 
 
 def get_my_answer():
@@ -48,9 +46,9 @@ def get_my_answer():
         left, right = packet.split("\n")
         left = eval(left)
         right = eval(right)
-        not_correct_order = compare_list(left, right, False)
-        if not_correct_order:
-            sum_indices+=(i+1)
+        correct_order = compare_list(left, right)
+        if correct_order:
+            sum_indices += (i+1)
         print(sum_indices)
 
     return sum_indices
