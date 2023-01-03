@@ -133,8 +133,9 @@ def get_my_answer():
     x_edges, y_edges = get_edges(coordinates, max_x, max_y)
     moves, directions = get_movement(movement)
     current_direction = "E"
+    print_map(coordinates, current_tile, current_direction)
     for i in range(len(moves)):
-        print(moves[i], current_direction)
+        #print(moves[i], current_direction)
         current_tile = move_person(moves[i], current_tile, coordinates, x_edges, y_edges, current_direction)
         #print_map(coordinates, current_tile, current_direction)
         try:

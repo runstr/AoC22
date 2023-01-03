@@ -3,18 +3,22 @@ from Tools.tools import load_data_as_lines, load_data, load_data_as_int, timeexe
 from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
 
-def get_region(x, y, w = 50):
-    if x < w:
-        if y < 3*w:
-            return 5
-        return 6
-    if x < 2*w:
-        if y < w:
-            return 1
-        if y < 2*w:
-            return 3
+
+def get_region(x, y):
+    if (50 <= x < 100) and y < 50:
+        return 1
+    if (x >= 100) and y < 50:
+        return 2
+    if (50 <= x < 100) and (50 <= y < 100):
+        return 3
+    if (50 <= x < 100) and (100 <= y < 150):
         return 4
-    return 2
+    if x < 50 and (100 <= y < 150):
+        return 5
+    if x < 50 and (150 <= y < 200):
+        return 6
+    raise Exception("coordinate outside region")
+
 
 def get_map(mapping):
     coordinates = {}
@@ -37,7 +41,38 @@ def get_map(mapping):
     return coordinates, beginning_tile, max_x, max_y
 
 
-def print_map(coordinates, current_point=None, direction=None):
+def map_coords_to_region_coords(coordinates):
+    regions_to_map = {1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}}
+    map_to_region = {}
+    for coord, (point, region) in coordinates.items():
+        if region == 1:
+            region_coords = (coord[0]-50, coord[1])
+            regions_to_map[1][region_coords] = coord
+            pass
+        elif region == 2:
+            region_coords = (coord[0]-100, coord[1])
+            regions_to_map[2][region_coords] = coord
+        elif region == 3:
+            region_coords = (coord[0]-50, coord[1]-50)
+            regions_to_map[3][region_coords] = coord
+        elif region == 4:
+            region_coords = (coord[0]-50, coord[1]-100)
+            regions_to_map[4][region_coords] = coord
+        elif region == 5:
+            region_coords = (coord[0], coord[1]-100)
+            regions_to_map[5][region_coords] = coord
+        elif region == 6:
+            region_coords = (coord[0], coord[1]-150)
+            regions_to_map[6][region_coords] = coord
+        else:
+            raise Exception("Something went wrong when mapping region coords.")
+
+        map_to_region[coord] = region_coords
+    return regions_to_map, map_to_region
+
+
+
+def print_map(coordinates, current_point=None, direction=None, coord_to_regions=None):
     current_line = -1
     for coord, point in coordinates.items():
         if coord[1] > current_line:
@@ -48,8 +83,10 @@ def print_map(coordinates, current_point=None, direction=None):
             print({"N": "^", "S": "v", "W": "<", "E": ">"}[direction], end="")
         elif coord == current_point and point == "#":
             raise Exception("Something has gone wrong")
+        elif coord_to_regions:
+            print(coord_to_regions[coord], end="")
         else:
-            print(point[1], end="")
+            print(point[0], end="")
 
 
 def get_movement(movement):
@@ -64,13 +101,108 @@ def get_movement(movement):
             directions.append(i)
             number = ""
     numbers.append(int(number))
-    print(numbers)
-    print(directions)
     return numbers, directions
 
 
-def map_edge_to_new_point_and_direction(coordinates, direction):
-    return 0
+def map_edge_to_new_point_and_direction(region, coord, direction, region_to_map, map_to_region):
+    coord = map_to_region[coord]
+    if region == 1:
+        if direction == "N":
+            new_region = 6
+            x = 0
+            y = coord[0]
+            new_direction = "E"
+        elif direction == "W":
+            new_region = 5
+            x = 0
+            y = 49-coord[1]
+            new_direction = "E"
+        else:
+            raise Exception("Moving in wrong direction for region 1")
+
+    elif region == 2:
+        if direction == "N":
+            new_region = 6
+            x = coord[0]
+            y = 49
+            new_direction = "N"
+        elif direction == "E":
+            new_region = 4
+            x = 49
+            y = 49-coord[1]
+            new_direction = "W"
+        elif direction == "S":
+            new_region = 3
+            x = 49
+            y = coord[0]
+            new_direction = "W"
+        else:
+            raise Exception("Moving in wrong direction for region 2")
+
+    elif region == 3:
+        if direction == "W":
+            new_region = 5
+            x = coord[1]
+            y = 0
+            new_direction = "S"
+        elif direction == "E":
+            new_region = 2
+            x = coord[1]
+            y = 49
+            new_direction = "N"
+        else:
+            raise Exception("Moving in wrong direction for region 3")
+
+    elif region == 4:
+        if direction == "E":
+            new_region = 2
+            x = 49
+            y = 49-coord[1]
+            new_direction = "W"
+        elif direction == "S":
+            new_region = 6
+            x = 49
+            y = coord[0]
+            new_direction = "W"
+        else:
+            raise Exception("Moving in wrong direction for region 4")
+
+    elif region == 5:
+        if direction == "N":
+            new_region = 3
+            x = 0
+            y = coord[0]
+            new_direction = "E"
+        elif direction == "W":
+            new_region = 1
+            x = 0
+            y = 49-coord[1]
+            new_direction = "E"
+        else:
+            raise Exception("Moving in wrong direction for region 5")
+
+    elif region == 6:
+        if direction == "W":
+            new_region = 1
+            x = coord[1]
+            y = 0
+            new_direction = "S"
+        elif direction == "E":
+            new_region = 4
+            x = coord[1]
+            y = 49
+            new_direction = "N"
+        elif direction == "S":
+            new_region = 2
+            x = coord[0]
+            y = 0
+            new_direction = "S"
+        else:
+            raise Exception("Moving in wrong direction for region 6")
+    else:
+        raise Exception("Region does not exist")
+    new_coordinates = region_to_map[new_region][(x, y)]
+    return new_coordinates, new_direction, new_region
 
 
 def get_new_direction(current_direction, turn):
@@ -82,43 +214,42 @@ def get_new_direction(current_direction, turn):
         return right_turn[current_direction]
 
 
-def move_person(moves, current_tile, coordinates, edge_mapping, direction):
+def move_person(moves, current_tile, coordinates, direction, region_to_map, map_to_region):
     direction_change = {"N": (0, -1), "S": (0, 1), "E": (1, 0), "W": (-1, 0)}
-    # edges = {"N": (current_tile[0], x_edges[current_tile[0]][1]),
-    #          "S": (current_tile[0], x_edges[current_tile[0]][0]),
-    #          "E": (y_edges[current_tile[1]][0], current_tile[1]),
-    #          "W": (y_edges[current_tile[1]][1], current_tile[1])}
-    dx, dy = direction_change[direction]
-    x_edge, y_edge = edge_mapping[direction]
     last_tile = current_tile
+    new_direction = direction
     for j in range(1, moves + 1):
+        last_direction = new_direction
+        dx, dy = direction_change[new_direction]
         if (last_tile[0] + dx, last_tile[1]+dy) not in coordinates:
-            next_tile = (x_edge, y_edge)
+            region = get_region(last_tile[0], last_tile[1])
+            next_tile, new_direction, temp_region = map_edge_to_new_point_and_direction(region,
+                                                                                        (last_tile[0], last_tile[1]),
+                                                                                        last_direction,
+                                                                                        region_to_map, map_to_region)
         else:
             next_tile = (last_tile[0] + dx, last_tile[1]+dy)
-        if coordinates[next_tile] == "#":
+        if coordinates[next_tile][0] == "#":
             current_tile = last_tile
+            new_direction = last_direction
             break
         elif j != moves:
             last_tile = next_tile
             continue
         current_tile = next_tile
 
-    return current_tile
+    return current_tile, new_direction
 
 
 def get_my_answer():
     mapping, movement = load_data(filepath, example=False).split("\n\n")
     coordinates, current_tile, max_x, max_y = get_map(mapping)
-    directions = ["E","W","S","N"]
-    print_map(coordinates)
-    edge_mapping = map_edge_to_new_point_and_direction(coordinates, directions)
+    regions_to_map, map_to_region = map_coords_to_region_coords(coordinates)
     moves, directions = get_movement(movement)
     current_direction = "E"
     for i in range(len(moves)):
-        print(moves[i], current_direction)
-        current_tile = move_person(moves[i], current_tile, coordinates, edge_mapping, current_direction)
-        #print_map(coordinates, current_tile, current_direction)
+        current_tile, current_direction = move_person(moves[i], current_tile, coordinates, current_direction,
+                                                      regions_to_map, map_to_region)
         try:
             current_direction = get_new_direction(current_direction, directions[i])
         except IndexError:
@@ -136,16 +267,3 @@ def execution():
     this_day = int(str(filepath).split("\\")[-1][3:])
     if submit_answer:
         submit(my_answer, part="b", day=this_day, year=2022)
-
-
-"""
-mappings: 
-
-1-2: E = Y const, x end to beginning, dir = E
-1-3: S = x = const, Y end to beginning, dir = S
-1-5: W = y = const, x  = end-x dir  = E
-1-6: N = y = yend to x beginning, x  = y = E
-
-osv
-
-"""
