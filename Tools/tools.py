@@ -5,7 +5,7 @@ import time
 
 
 def set_cookie():
-    with open("private.env", "r") as f:
+    with open("../private.env", "r") as f:
         data = f.read()
         environ["AOC_SESSION"] = data.split("=")[1]
 
@@ -62,11 +62,11 @@ def get_todays_date():
     return str(date.today().day)
 
 
-def insert_data(todays_date):
-    filename = __file__[:-14]+"Day"+todays_date+"\\input.txt"
+def insert_data(todays_date, year):
+    filename = __file__[:-14]+"y"+str(year)+"\\Day"+todays_date+"\\input.txt"
     if path.getsize(filename) == 0:
         with open(filename, "w") as inputfile:
-            inputfile.write(get_data(year=2022, day=int(todays_date)))
+            inputfile.write(get_data(year=year, day=int(todays_date)))
 
 
 def timeexecution(function):
