@@ -3,7 +3,7 @@ from Tools.tools import load_data_as_lines, load_data, load_data_as_int, timeexe
 from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
 
-letter_numbers = {"one": 1, "two": 2,"three": 3,"four": 4,"five": 5,"six": 6,"seven": 7,"eight": 8,"nine": 9, "zero": 0}
+letter_numbers = {"one": 1, "two": 2,"three": 3,"four": 4,"five": 5,"six": 6,"seven": 7,"eight": 8,"nine": 9}
 
 def check_if_part_of_string(string, reversed):
     for key in letter_numbers.keys():
@@ -19,7 +19,7 @@ def check_if_part_of_string(string, reversed):
 
 def get_my_answer():
     #all_data = load_data(filepath, example=True)
-    all_data = load_data_as_lines(filepath, example=False)
+    all_data = load_data_as_lines(filepath, example=True)
     numbers = []
     for data in all_data:
         digit = ""
@@ -29,9 +29,8 @@ def get_my_answer():
                 break
             else:
                 digit += data[i]
-                if not check_if_part_of_string(digit, reversed=False):
-                    digit = data[i]
-                    continue
+                while not check_if_part_of_string(digit, reversed=False):
+                    digit = digit[1:]
                 try:
                     first = str(letter_numbers[digit])
                     break
@@ -44,9 +43,8 @@ def get_my_answer():
                 break
             else:
                 digit += data[j]
-                if not check_if_part_of_string(digit, reversed=True):
-                    digit = data[j]
-                    continue
+                while not check_if_part_of_string(digit, reversed=True):
+                    digit = digit[1:]
                 try:
                     last = str(letter_numbers[digit[::-1]])
                     break
