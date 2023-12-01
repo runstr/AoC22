@@ -6,7 +6,25 @@ filepath = pathlib.Path(__file__).parent.resolve()
 
 
 def get_my_answer():
-    my_answer = load_data(filepath, example=True)
+    #all_data = load_data(filepath, example=True)
+    all_data = load_data_as_lines(filepath, example=True)
+    numbers = []
+    for data in all_data:
+        digit = ""
+        for i in range(0, len(data)):
+            if data[i].isdigit():
+                first = data[i]
+                break
+        for j in range(len(data)-1, -1, -1):
+            if data[j].isdigit():
+                last = data[j]
+                break
+
+
+        numbers.append(int(first+last))
+
+    #all_data = load_data_as_int(filepath, example=True)
+    my_answer = sum(numbers)
     return my_answer
 
 
