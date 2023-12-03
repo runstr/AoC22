@@ -3,9 +3,24 @@ from Tools.tools import load_data_as_lines, load_data, load_data_as_int, timeexe
 from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
 
-
+max_cubes = {"red": 12, "green": 13, "blue": 14}
 def get_my_answer():
-    my_answer = load_data(filepath, example=True)
+    all_data = load_data_as_lines(filepath, example=False)
+    all_game_date = {}
+    for line in all_data:
+        single_game_data = {"red": 0, "green": 0, "blue": 0}
+        game, cubes = line.split(": ")
+        game_int = int(game[5:])
+        sets = cubes.split("; ")
+        for _set in sets:
+            for temp in _set.split(", "):
+                digit, color = temp.split(" ")
+                if int(digit) > single_game_data[color]:
+                    single_game_data[color]= int(digit)
+        all_game_date[game_int] = single_game_data
+    my_answer = 0
+    for game, data in all_game_date.items():
+        my_answer += data["red"]*data["green"]*data["blue"]
     return my_answer
 
 
