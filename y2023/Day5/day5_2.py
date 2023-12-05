@@ -3,7 +3,8 @@ from Tools.tools import load_data_as_lines, load_data, load_data_as_int, timeexe
 from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
 
-def translate_source_to_dest(source, transform):
+def translate_source_to_dest(source_range, transform):
+    source_start, source_end = source_range[0], source_range[1]
     for line in transform:
         if source >= line[1] and source <= line[1]+line[2]:
             destination = source-line[1]+line[0]
@@ -20,16 +21,16 @@ def get_my_answer():
         for line in transform.split("\n")[1:]:
             new_transform.append(tuple(map(int, line.split(" "))))
         new_data.append(new_transform)
-    old_source = seeds
+    old_source_range = [(seeds[i], seeds[i+1]) for i in range(0, len(seeds), 2)]
     for transform in new_data:
-        new_destination = []
-        for source in old_source:
-            new_destination.append(translate_source_to_dest(source, transform))
-        old_source = [i for i in new_destination]
-        #print(new_destination)
+        new_source_range = []
+        for source in old_source_range:
+            new_source_range.append(translate_source_to_dest(source, transform))
+        old_source_range = [i for i in new_source_range]
+        print(new_source_range)
 
 
-    return min(new_destination)
+    return new_source_range
 
 @timeexecution
 def execution():
