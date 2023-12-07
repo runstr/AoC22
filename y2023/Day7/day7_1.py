@@ -16,7 +16,6 @@ def check_hand(card: str):
     hand = ""
     if len(unique_cards) == 1:
         hand = "all_same"
-        values = assign_value(unique_cards[0])
     elif len(unique_cards) == 2:
         if card.count(unique_cards[0]) == 4:
             hand = "four_same"
@@ -25,7 +24,7 @@ def check_hand(card: str):
         elif card.count(unique_cards[0]) == 3:
             hand = "house"
         elif card.count(unique_cards[1]) == 3:
-            hand = "four_same"
+            hand = "house"
     elif len(unique_cards) == 3:
         if card.count(unique_cards[0]) == 3 or card.count(unique_cards[1]) == 3 or card.count(unique_cards[2]) == 3:
             hand = "three_kind"
