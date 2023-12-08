@@ -5,24 +5,19 @@ from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
 
 
-
 def get_my_answer():
     data = load_data_as_lines(filepath, example=False)
     instructions = data[0]
-    maps = {}
+    node_map = {}
     for line in data[2:]:
         start, end = line.split(" = ")
-        left, right = end[1:-1].split(", ")
-        maps[start] = [left, right]
+        node_map[start] = [*end[1:-1].split(", ")]
     i = 0
     instructions_length = len(instructions)
-    next_map = "AAA"
-    while next_map != "ZZZ":
+    next_node = "AAA"
+    while next_node != "ZZZ":
         instruction = instructions[i % instructions_length]
-        if instruction == "L":
-            next_map = maps[next_map][0]
-        else:
-            next_map = maps[next_map][1]
+        next_node = node_map[next_node][0] if instruction == "L" else node_map[next_node][1]
         i += 1
     return i
 
