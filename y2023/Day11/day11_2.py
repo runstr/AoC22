@@ -4,7 +4,7 @@ from aocd import submit
 
 filepath = pathlib.Path(__file__).parent.resolve()
 
-NUMBER_OF_GALAXIES = 2
+NUMBER_OF_GALAXIES = 999999
 
 def get_empty(index, empty):
     empty_lines = 0
@@ -16,7 +16,7 @@ def get_empty(index, empty):
 
 def get_my_answer():
     global NUMBER_OF_GALAXIES
-    data = load_data_as_lines(filepath, example=True)
+    data = load_data_as_lines(filepath, example=False)
     empty_rows = []
     empty_columns = []
     for y, line in enumerate(data):
