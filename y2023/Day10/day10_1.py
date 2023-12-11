@@ -68,9 +68,9 @@ def find_next_points(this_point, this_letter, path_lengths, data):
     elif this_letter == "L":
         point1 = (this_point[0], this_point[1]-1)
         point4 = (this_point[0]+1, this_point[1])
-        if verify_point(this_point,point1, path_lengths, data, allowed_letters=["F", "|", "7"]):
+        if verify_point(this_point, point1, path_lengths, data, allowed_letters=["F", "|", "7"]):
             verified_points.append(point1)
-        if verify_point(this_point,point4, path_lengths, data, allowed_letters=["J", "-", "7"]):
+        if verify_point(this_point, point4, path_lengths, data, allowed_letters=["J", "-", "7"]):
             verified_points.append(point4)
     return verified_points
 
