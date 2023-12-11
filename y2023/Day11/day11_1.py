@@ -6,14 +6,14 @@ filepath = pathlib.Path(__file__).parent.resolve()
 
 
 def get_my_answer():
-    data = load_data_as_lines(filepath, example=False)
+    data = load_data_as_lines(filepath, example=True)
     empty_rows = []
     empty_columns = []
     new_data = []
     x_max = len(data[0])
     for y, line in enumerate(data):
         if "#" not in line:
-            new_data.append("."*x_max)
+            new_data.append(".........."*x_max)
         new_data.append(line)
     y_max = len(new_data)
     newest_data = ["" for _ in range(y_max)]
@@ -21,14 +21,14 @@ def get_my_answer():
         column = [data[y] for data in new_data]
         if "#" not in column:
             for i in range(len(column)):
-                newest_data[i] += "."
+                newest_data[i] += ".........."
         for i in range(len(column)):
             newest_data[i] += column[i]
     galaxies = []
     for y in range(len(newest_data)):
         for x in range(len(newest_data[0])):
             if newest_data[y][x] == "#":
-                galaxies.append((x,y))
+                galaxies.append((x, y))
     used_galaxies = []
     total_lengths = []
     for galaxy in galaxies:

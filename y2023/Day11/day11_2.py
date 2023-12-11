@@ -4,7 +4,7 @@ from aocd import submit
 
 filepath = pathlib.Path(__file__).parent.resolve()
 
-NUMBER_OF_GALAXIES = 10
+NUMBER_OF_GALAXIES = 2
 
 def get_empty(index, empty):
     empty_lines = 0
@@ -19,22 +19,23 @@ def get_my_answer():
     data = load_data_as_lines(filepath, example=True)
     empty_rows = []
     empty_columns = []
-    x_max = len(data[0])
     for y, line in enumerate(data):
         if "#" not in line:
             empty_rows.append(y)
 
-    for x in range(0, x_max):
+    for x in range(0, len(data[0])):
         column = [dat[x] for dat in data]
         if "#" not in column:
             empty_columns.append(x)
+    print(empty_columns)
+    print(empty_rows)
     galaxies = []
     for y in range(len(data)):
         for x in range(len(data[0])):
             if data[y][x] == "#":
                 empty_x = get_empty(x, empty_columns)
                 empty_y = get_empty(y, empty_rows)
-                galaxies.append((x+empty_x*NUMBER_OF_GALAXIES,y+empty_y*NUMBER_OF_GALAXIES))
+                galaxies.append((x+empty_x*NUMBER_OF_GALAXIES, y+empty_y*NUMBER_OF_GALAXIES))
     used_galaxies = []
     total_lengths = []
     for galaxy in galaxies:
@@ -44,7 +45,7 @@ def get_my_answer():
                 total_lengths.append(abs(galaxy[0]-galaxy2[0])+abs(galaxy[1]-galaxy2[1]))
 
 
-
+    print(len(total_lengths))
     return sum(total_lengths)
 
 
