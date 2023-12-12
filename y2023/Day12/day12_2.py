@@ -50,10 +50,25 @@ def generate_combinations(x,y):
     values = [False, True]
     return [combo for combo in itertools.product(values, repeat=x) if sum(combo)==y]
     pass
+def verify_next_possible(my_map, count, conditions):
+    if not conditions:
+        return
+    if my_map[0] == "." and count > 0:
+        if conditions[0] != count:
+            return
+        count = 0
+
+    if my_map[0] == "?":
+        verify_next_possible(my_map[1:], count+1, conditions)
+        verify_next_possible(my_map[1:], 0, conditions)
+    elif my_map[0] == "#":
+        verify_next_possible(my_map[1:], count+1, conditions)
+    else:
+        verify_next_possible(my_map[1:], 0, conditions)
 
 def get_my_answer():
     data = load_data_as_lines(filepath, example=False)
-    total_total_combinations = []
+    total_combinations = []
     new_data = []
     for line in data:
         my_map, conditions = line.split(" ")
@@ -62,18 +77,12 @@ def get_my_answer():
         new_data.append((mymap[:-1], conditions[:-1]))
 
     for my_map, conditions in new_data:
-        unknowns = my_map.count("?")
-        knowns = my_map.count("#")
-        old_conditions = list(map(int, conditions.split(",")))
-        total = sum(old_conditions)
-        unknown_indexes = get_all_indexes(my_map)
-        conditions = generate_combinations(unknowns, total-knowns)
-        total_combinations = 0
-        for condition in conditions:
-            new_map = generate_new_map(my_map, unknown_indexes, condition)
-            if check_map(new_map, old_conditions):
-                total_combinations += 1
-        total_total_combinations.append(total_combinations)
+        possible_combinations = 0
+        count = 0
+        if my_map[0] == "?":
+            verify_next_possible(my_map[1:], count+1, conditions)
+            verify_next_possible(my_map[1:], count, conditions)
+        total_combinations.append(possible_combinations)
     return sum(total_total_combinations)
 
 
