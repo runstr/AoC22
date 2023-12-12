@@ -3,29 +3,33 @@ from Tools.tools import load_data_as_lines, load_data, load_data_as_int, timeexe
 from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
 
-def verify_next_possible(my_map, count, conditions, possible_combinations):
-    if my_map == "":
-        if not possible_combinations:
-            possible_combinations[0] += 1
-        return
 
-    if count > conditions[0]:
+def verify_next_possible(my_map, conditions, possible_combinations, new_map):
+    if my_map.count("#")+my_map.count("?") < sum(conditions):
         return
-    if not conditions:
-        return
-    if my_map[0] == "." and count > 0:
-        if conditions[0] != count:
+    if my_map[0] == ".":
+        verify_next_possible(my_map[1:], conditions, possible_combinations, new_map + ".")
+
+    if new_map[-1] == "#":
+        if len(my_map) < conditions[0]-1:
             return
-        conditions = []
-        count = 0
+        if "." in my_map[:conditions[0]-1]:
+            return
+        if len(my_map) == conditions[0]-1:
+            possible_combinations.append(new_map+"#"*(conditions[0]-1))
+            return
+        if my_map[conditions[0]] == "#":
+            return
+        if len(conditions) == 1:
+            possible_combinations.append(new_map+"#"*(conditions[0]-1)+my_map[conditions[0]:])
+            return
+        verify_next_possible(my_map[conditions[0]:], conditions[1:], possible_combinations, new_map+"#"*(conditions[0]-1) + ".")
 
-    if my_map[0] == "?":
-        verify_next_possible(my_map[1:], count+1, conditions, possible_combinations)
-        verify_next_possible(my_map[1:], 0, conditions, possible_combinations)
-    elif my_map[0] == "#":
-        verify_next_possible(my_map[1:], count+1, conditions, possible_combinations)
-    else:
-        verify_next_possible(my_map[1:], 0, conditions, possible_combinations)
+    if my_map[0] == "#":
+        verify_next_possible(my_map[1:], conditions, possible_combinations, new_map + "#")
+    elif my_map[0] == "?":
+        verify_next_possible(my_map[1:], conditions, possible_combinations, new_map + ".")
+        verify_next_possible(my_map[1:], conditions, possible_combinations, new_map + "#")
 
 def get_my_answer():
     data = load_data_as_lines(filepath, example=True)
@@ -38,17 +42,19 @@ def get_my_answer():
         new_data.append((mymap[:-1], conditions[:-1]))
 
     for my_map, conditions in new_data:
-        possible_combinations = [0]
+        my_map
+        possible_combinations = []
         conditions = list(map(int, conditions.split(",")))
-        count = 0
+        new_map = ""
         if my_map[0] == "?":
-            verify_next_possible(my_map[1:], count + 1, conditions, possible_combinations)
-            verify_next_possible(my_map[1:], 0, conditions, possible_combinations)
+            verify_next_possible(my_map[1:], conditions, possible_combinations, new_map+"#")
+            verify_next_possible(my_map[1:], conditions, possible_combinations, new_map+".")
         elif my_map[0] == "#":
-            verify_next_possible(my_map[1:], count + 1, conditions, possible_combinations)
+            verify_next_possible(my_map[1:], conditions, possible_combinations, new_map+"#")
         else:
-            verify_next_possible(my_map[1:], 0, conditions, possible_combinations)
-        total_combinations.append(possible_combinations)
+            verify_next_possible(my_map[1:], conditions, possible_combinations, new_map+".")
+        #print(possible_combinations)
+        total_combinations.append(len(possible_combinations))
     return sum(total_combinations)
 
 
