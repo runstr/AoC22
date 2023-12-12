@@ -2,59 +2,16 @@ import pathlib
 from Tools.tools import load_data_as_lines, load_data, load_data_as_int, timeexecution
 from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
-import itertools
 
-def get_all_indexes(string):
-    return [i for i, val in enumerate(string) if val == "?"]
-
-def generate_new_map(map, indexes, combinations):
-    for i, index in enumerate(indexes):
-        new_letter = "#" if combinations[i] else "."
-        map = map[:index]+new_letter+map[index+1:]
-    return map
-
-def check_map(map, requirements):
-    req_index = 0
-    start = False
-    count = 0
-    for i in map:
-        if start and i == ".":
-            if count != requirements[req_index]:
-                return False
-            else:
-                count = 0
-                req_index += 1
-                start = False
-        elif i == "#":
-            start = True
-            count += 1
-    if start and count != requirements[-1]:
-        return False
-    return True
-
-
-def check_map2(map, requirements):
-    map = "."+map+"."
-    for key, value in requirements.items():
-        count = 0
-        for i in range(0, len(map) - len(key)+1):
-            check_value = map[i:i+len(key)]
-            if check_value == key:
-                count += 1
-        if count != value:
-            return False
-    return True
-
-
-def generate_combinations(x,y):
-    values = [False, True]
-    return [combo for combo in itertools.product(values, repeat=x) if sum(combo)==y]
-    pass
 def verify_next_possible(my_map, count, conditions, possible_combinations):
+    if my_map == "":
+        if not possible_combinations:
+            possible_combinations[0] += 1
+        return
+
     if count > conditions[0]:
         return
     if not conditions:
-        possible_combinations[0]+=1
         return
     if my_map[0] == "." and count > 0:
         if conditions[0] != count:
@@ -71,13 +28,13 @@ def verify_next_possible(my_map, count, conditions, possible_combinations):
         verify_next_possible(my_map[1:], 0, conditions, possible_combinations)
 
 def get_my_answer():
-    data = load_data_as_lines(filepath, example=False)
+    data = load_data_as_lines(filepath, example=True)
     total_combinations = []
     new_data = []
     for line in data:
         my_map, conditions = line.split(" ")
-        mymap = (my_map+"?")*5
-        conditions = (conditions+",")*5
+        mymap = (my_map+"?")
+        conditions = (conditions+",")
         new_data.append((mymap[:-1], conditions[:-1]))
 
     for my_map, conditions in new_data:
