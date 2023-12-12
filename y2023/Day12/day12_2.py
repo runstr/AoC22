@@ -50,21 +50,25 @@ def generate_combinations(x,y):
     values = [False, True]
     return [combo for combo in itertools.product(values, repeat=x) if sum(combo)==y]
     pass
-def verify_next_possible(my_map, count, conditions):
+def verify_next_possible(my_map, count, conditions, possible_combinations):
+    if count > conditions[0]:
+        return
     if not conditions:
+        possible_combinations[0]+=1
         return
     if my_map[0] == "." and count > 0:
         if conditions[0] != count:
             return
+        conditions = []
         count = 0
 
     if my_map[0] == "?":
-        verify_next_possible(my_map[1:], count+1, conditions)
-        verify_next_possible(my_map[1:], 0, conditions)
+        verify_next_possible(my_map[1:], count+1, conditions, possible_combinations)
+        verify_next_possible(my_map[1:], 0, conditions, possible_combinations)
     elif my_map[0] == "#":
-        verify_next_possible(my_map[1:], count+1, conditions)
+        verify_next_possible(my_map[1:], count+1, conditions, possible_combinations)
     else:
-        verify_next_possible(my_map[1:], 0, conditions)
+        verify_next_possible(my_map[1:], 0, conditions, possible_combinations)
 
 def get_my_answer():
     data = load_data_as_lines(filepath, example=False)
@@ -77,13 +81,18 @@ def get_my_answer():
         new_data.append((mymap[:-1], conditions[:-1]))
 
     for my_map, conditions in new_data:
-        possible_combinations = 0
+        possible_combinations = [0]
+        conditions = list(map(int, conditions.split(",")))
         count = 0
         if my_map[0] == "?":
-            verify_next_possible(my_map[1:], count+1, conditions)
-            verify_next_possible(my_map[1:], count, conditions)
+            verify_next_possible(my_map[1:], count + 1, conditions, possible_combinations)
+            verify_next_possible(my_map[1:], 0, conditions, possible_combinations)
+        elif my_map[0] == "#":
+            verify_next_possible(my_map[1:], count + 1, conditions, possible_combinations)
+        else:
+            verify_next_possible(my_map[1:], 0, conditions, possible_combinations)
         total_combinations.append(possible_combinations)
-    return sum(total_total_combinations)
+    return sum(total_combinations)
 
 
 @timeexecution
