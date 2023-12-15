@@ -19,24 +19,12 @@ def get_my_answer():
     print(total_load)
     total_sum = 0
     for value in total_load.values():
-        total_sum+=sum(value)
+        total_sum += sum(value)
     return total_sum
-
-def temp(data):
-    rocks = {}
-    square_rocks = {}
-    for y, line in enumerate(data):
-        next_i = 0
-        for x, rock in enumerate(line):
-            if rock == "O":
-                rocks[x].append(y)
-            elif rock == "#":
-                square_rocks[x].append(y)
-    new_rocks = {i: [] for i in range(len(data[0]))}
 
 @timeexecution
 def execution():
-    submit_answer = True
+    submit_answer = False
     my_answer = get_my_answer()
     print(my_answer)
     this_day = int(str(filepath).split("\\")[-1][3:])
