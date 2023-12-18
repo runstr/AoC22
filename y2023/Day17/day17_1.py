@@ -6,10 +6,6 @@ from aocd import submit
 import math
 filepath = pathlib.Path(__file__).parent.resolve()
 
-class Path:
-    def __init__(self, start_positions, wiegte):
-        current_step  None:
-    current_ste
 def print_nodes(end_node, max_x, max_y, previous_path):
     new_map = [[","]*max_x for _ in range(max_y)]
     current_node = end_node
@@ -68,7 +64,9 @@ def dijsktra_search(coordinates, weigthed_cords, max_x, max_y):
             if (point, direction, new_count) in visited:
                 continue
             current.append((point, direction, new_count))
-            if weigthed_cords[cur_point] + coordinates[point] <= weigthed_cords[point] and check_previous_steps(previous_path, cur_point, direction):
+            if not check_previous_steps(previous_path, cur_point, direction):
+                continue
+            if weigthed_cords[cur_point] + coordinates[point] <= weigthed_cords[point]:
                 weigthed_cords[point] = weigthed_cords[cur_point] + coordinates[point]
                 previous_path[point] = cur_point
                 #print_nodes(cur_point, max_x, max_y, previous_path)
