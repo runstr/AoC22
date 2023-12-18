@@ -13,7 +13,7 @@ def get_my_answer():
         instructions.append((direction, length))
     max_x, max_y = 0, 0
     min_y, min_x = math.inf, math.inf
-    map_points = [(0,0)]
+    map_points = []
     current_x = 0
     current_y = 0
     for direction, length in instructions:
@@ -41,7 +41,7 @@ def get_my_answer():
         print("".join(line))
 
     print()
-    inside_point = (25, 2)
+    inside_point = (2, 25)
     next_points = [inside_point]
     while next_points:
         this_point = next_points.pop()
@@ -52,13 +52,13 @@ def get_my_answer():
         for dx, dy in ((-1, 0), (1, 0), (0, 1), (0,-1)):
             new_x = this_point[0]+dx
             new_y = this_point[1]+dy
-            if 0<new_x<max_x-min_x and 0<new_y<max_y-min_y:
+            if 0<new_x<(max_x-min_x) and 0<new_y<(max_y-min_y):
                 next_points.append((new_x, new_y))
+    total = 0
     for line in mapping:
-        print("".join(line))
-    print()
+        total += line.count("#")
 
-    return map_points
+    return total
 
 
 @timeexecution
