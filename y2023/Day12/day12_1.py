@@ -9,6 +9,7 @@ import itertools
 def get_all_indexes(string):
     return [i for i, val in enumerate(string) if val == "?"]
 
+
 def generate_new_map(map, indexes, combinations):
     for i, index in enumerate(indexes):
         new_letter = "#" if combinations[i] else "."
@@ -48,7 +49,7 @@ def check_map2(map, requirements):
     return True
 
 
-def generate_combinations(x,y):
+def generate_combinations(x, y):
     values = [False, True]
     return [combo for combo in itertools.product(values, repeat=x) if sum(combo)==y]
     pass
@@ -56,18 +57,16 @@ def generate_combinations(x,y):
 def get_my_answer():
     data = load_data_as_lines(filepath, example=False)
     total_total_combinations = []
+    new_data = []
     for line in data:
         my_map, conditions = line.split(" ")
+        mymap = (my_map+"?")
+        conditions = (conditions+",")
+        new_data.append((mymap[:-1], conditions[:-1]))
+    for my_map, conditions in new_data:
         unknowns = my_map.count("?")
         knowns = my_map.count("#")
         old_conditions = list(map(int, conditions.split(",")))
-        requirements = ["."+"#"*i+"." for i in old_conditions]
-        # new_requirements = {}
-        # for req in requirements:
-        #     if req in new_requirements:
-        #         new_requirements[req] += 1
-        #     else:
-        #         new_requirements[req] = 1
         total = sum(old_conditions)
         unknown_indexes = get_all_indexes(my_map)
         conditions = generate_combinations(unknowns, total-knowns)
