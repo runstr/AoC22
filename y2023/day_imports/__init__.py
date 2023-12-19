@@ -1,3 +1,4 @@
+from y2023.Day19 import * 
 from y2023.Day18 import * 
 from y2023.Day17 import * 
 from y2023.Day16 import * 
@@ -38,3 +39,4 @@ __all__ += ["day15_1", "day15_2"]
 __all__ += ["day16_1", "day16_2"]
 __all__ += ["day17_1", "day17_2"]
 __all__ += ["day18_1", "day18_2"]
+__all__ += ["day19_1", "day19_2"]
