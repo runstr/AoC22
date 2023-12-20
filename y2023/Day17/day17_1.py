@@ -1,4 +1,4 @@
-import heapq
+from heapq import heappop, heappush
 import pathlib
 from Tools.tools import load_data_as_lines, load_data, load_data_as_int, timeexecution
 from aocd import submit
@@ -6,89 +6,69 @@ from aocd import submit
 import math
 filepath = pathlib.Path(__file__).parent.resolve()
 
-def print_nodes(end_node, max_x, max_y, previous_path):
+def update_nodes(nodes_to_visit, heat_map, coordinates, direction, value, max_x, max_y):
+    new_directions = [(direction[1], direction[0]), (-direction[1], -direction[0])]
+    for new_direction in new_directions:
+        parent_node = coordinates
+        parent_value = value
+        dx, dy = new_direction[0], new_direction[1]
+        for i in range(1, 4):
+            new_pos = (parent_node[0] + dx, parent_node[1] + dy)
+            if 0 <= new_pos[0] < max_x and 0 <= new_pos[1] < max_y:
+                new_value = parent_value + heat_map[(new_pos[0], new_pos[1])]
+                heappush(nodes_to_visit, (new_value, (-new_pos[0], -new_pos[1]), (-dx, -dy)))
+                parent_node = new_pos
+                parent_value = new_value
+def print_nodes(end_node, max_x, max_y, parents):
     new_map = [[","]*max_x for _ in range(max_y)]
     current_node = end_node
-    while True:
+    while current_node != (0,0):
         new_map[current_node[1]][current_node[0]] = "#"
-        try:
-            new_node = previous_path[current_node]
-            if current_node == new_node:
-                break
-        except KeyError as e:
-            break
-        current_node = new_node
+        current_node = parents[current_node]
+
     for line in new_map:
         print("".join(line))
 
-def get_adjacent_points(curr_pos, max_y, max_x, direction):
-    adjacent_points = []
-    previous_step = (curr_pos[0]-direction[0], curr_pos[1]-direction[1])
-    for dx, dy in [(1, 0), (-1, 0), (0, -1), (0, 1)]:
-        if curr_pos[0] + dx >= 0 and curr_pos[0] + dx < max_x and curr_pos[1] + dy >= 0 and curr_pos[1] + dy < max_y:
-            new_pos = (curr_pos[0] + dx, curr_pos[1] + dy)
-            if new_pos != previous_step:
-                adjacent_points.append((new_pos, (dx, dy)))
-    return adjacent_points
-
-
-def check_previous_steps(previous_path, start_node, direction):
-    try:
-        first_node = previous_path[start_node]
-        second_node = previous_path[first_node]
-        third_node = previous_path[second_node]
-    except KeyError:
-        return True
-    first_dir = (start_node[0] - first_node[0], start_node[1] - first_node[1])
-    second_dir = (first_node[0] - second_node[0], first_node[1] - second_node[1])
-    third_dir = (second_node[0] - third_node[0], second_node[1] - third_node[1])
-    if first_dir == second_dir == third_dir == direction:
-        return False
-    return True
-
-def dijsktra_search(coordinates, weigthed_cords, max_x, max_y):
-    current = [((0, 0), (0, 0), 0)]
+def dijsktra_search(weigthed_cords, max_x, max_y, heat_map):
+    nodes_to_visit = []
+    parents = {}
+    heappush(nodes_to_visit, (0, (0, 0), (1, 0)))
+    heappush(nodes_to_visit, (0, (0, 0), (0, 1)))
     visited = set()
-    previous_path = {}
-    while current:
-        cur_point, current_direction, count = current.pop()
-        visited.add((cur_point, current_direction, count))
-        next_points = get_adjacent_points(cur_point, max_x, max_y, current_direction)
-        for point, direction in next_points:
-            if direction == current_direction:
-                new_count = count+1
-            else:
-                new_count = 1
-            if new_count > 3:
-                continue
-            if (point, direction, new_count) in visited:
-                continue
-            current.append((point, direction, new_count))
-            if not check_previous_steps(previous_path, cur_point, direction):
-                continue
-            if weigthed_cords[cur_point] + coordinates[point] <= weigthed_cords[point]:
-                weigthed_cords[point] = weigthed_cords[cur_point] + coordinates[point]
-                previous_path[point] = cur_point
-                #print_nodes(cur_point, max_x, max_y, previous_path)
-                #print()
-    print_nodes((max_x-1, max_y-1), max_x, max_y, previous_path)
-    print()
+    final_value = math.inf
+    while nodes_to_visit:
+        node = heappop(nodes_to_visit)
+        value, coordinates, direction = node
+        direction = (-direction[0], -direction[1])
+        coordinates = (-coordinates[0], -coordinates[1])
+        if (coordinates, direction) in visited:
+            continue
+        else:
+            visited.add((coordinates, direction))
+        if value <= weigthed_cords[coordinates]:
+            weigthed_cords[coordinates] = value
+            parents[coordinates] = (coordinates[0]-direction[0], coordinates[1]-direction[1])
+        if coordinates == (max_x-1, max_y-1):
+            final_value = value
+            break
+        update_nodes(nodes_to_visit, heat_map, coordinates, direction, value, max_x, max_y)
+    test = weigthed_cords[(max_x-1, max_y-1)]
 
-
+    print_nodes((max_x-1, max_y-1), max_x, max_y, parents)
+    print(final_value)
+    return test
 
 def get_my_answer():
-    data = load_data_as_int(filepath, example=True)
-    coordinates = {}
+    data = load_data_as_int(filepath, example=False)
+    heat_map = {}
     for y, line in enumerate(data):
         for x, weigth in enumerate(line):
-            coordinates[(x, y)] = weigth
-    weigthed_cords = {}
-    for coord in coordinates:
-        weigthed_cords[coord] = math.inf
-    weigthed_cords[(0, 0)] = 0
+            heat_map[(x, y)] = weigth
+    weighted_cords = {}
+    for coord in heat_map.keys():
+        weighted_cords[coord] = math.inf
     max_x, max_y = len(data[0]), len(data)
-    dijsktra_search(coordinates, weigthed_cords, max_x, max_y)
-    print(weigthed_cords[(max_y-1,max_y-1)])
+    dijsktra_search(weighted_cords, max_x, max_y, heat_map)
     return
 
 
