@@ -14,23 +14,47 @@ def get_neigbours(point, max_x, max_y, map_points):
                 new_points.add(new_point)
     return new_points
 
+def print_map(mapping, nodes, max_x, max_y):
+    for y in range(-1,max_y+1):
+        for x in range(-1, max_x + 1):
+            if (x, y) in nodes:
+                print("0", end="")
+            else:
+                print(mapping[(x,y)], end="")
+        print()
+
+
 def get_my_answer():
     data = load_data_as_lines(filepath, example=False)
     max_x = len(data[0])
-    max_y = len(data[0])
+    max_y = len(data)
     map_points = {}
-    for y, line in enumerate(data):
-        for x, letter in enumerate(line):
-            if letter == "S":
-                start_point = (x, y)
-            map_points[(x, y)] = letter
-    max_steps = 64
+    for y in range(-1, len(data)+1):
+        for x in range(-1, len(data[0])+1):
+            if 0 <= x <len(data[0]) and 0 <= y<len(data):
+                if data[y][x] == "S":
+                    start_point = (x, y)
+                    map_points[(x, y)] = ","
+                elif data[y][x] == ".":
+                    map_points[(x, y)] = ","
+                else:
+                    map_points[(x, y)] = "#"
+
+            else:
+                map_points[(x, y)] = ","
+    #start_point = (0, 0)
+    max_steps = max_x+1
     travel_points = [start_point]
+    print_map(map_points, travel_points, max_x, max_y)
     for step in range(max_steps):
         new_points = set()
         for point in travel_points:
             neigbours = get_neigbours(point, max_x,  max_y, map_points)
             new_points |= neigbours
+        #print_map(map_points, new_points, max_x, max_y)
+        #print()
+        print(f"step: {step}, posibilites: {len(new_points)}")
+
         travel_points = list(new_points)
 
     return len(travel_points)
