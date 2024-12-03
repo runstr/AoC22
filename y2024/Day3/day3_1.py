@@ -1,34 +1,16 @@
 import pathlib
 from Tools.tools import load_data_as_lines, load_data, load_data_as_int, timeexecution
 from aocd import submit
-
+import re
 filepath = pathlib.Path(__file__).parent.resolve()
 
 
 def get_my_answer():
     all_data = load_data(filepath, example=False)
-    index = 0
-    multiply_sequences = []
-    total_number = 0
-    while index + 3 < len(all_data):
-        if all_data[index:index+4] == "mul(":
-            mulitpication_text = ""
-            start_index = index+4
-            while all_data[start_index] != ")":
-                mulitpication_text += all_data[start_index]
-                start_index += 1
-            try:
-                first, last = mulitpication_text.split(",")
-                first = int(first)
-                last = int(last)
-            except ValueError:
-                pass
-            else:
-                total_number += (first * last)
-                index=start_index
-                multiply_sequences.append((first, last))
-        index += 1
-    print(multiply_sequences)
+    # Find all occ
+    expressions = re.findall(r"mul\((\d+),(\d+)\)", all_data)
+    print(expressions)
+    total_number = sum(int(a)*int(b) for a, b in expressions)
     return total_number
 
 

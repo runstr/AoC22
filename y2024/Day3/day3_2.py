@@ -1,51 +1,39 @@
+import math
 import pathlib
 from Tools.tools import load_data_as_lines, load_data, load_data_as_int, timeexecution
 from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
-
+import re
 
 def get_my_answer():
     all_data = load_data(filepath, example=False)
-    startet = False
-    index = all_data.index("mul(")
-    index = 0
-    multiply_sequences = []
-    total_number = 0
-    dont = "don't()"
-    dont_length = len(dont)
-    do = "do()"
-    do_length = len(do)
-    disabled = False
-    while index + 3 < len(all_data):
-        try:
-            if all_data[index:index+do_length] == do:
-                disabled = False
-                index += do_length
-            elif all_data[index:index+dont_length] == dont:
-                disabled = True
-                index += dont_length
-        except:
-            pass
 
-        if not disabled and all_data[index:index+4] == "mul(":
-            mulitpication_text = ""
-            start_index = index+4
-            while all_data[start_index] != ")":
-                mulitpication_text += all_data[start_index]
-                start_index += 1
+    expressions = re.finditer(r"mul\((\d+),(\d+)\)", all_data)
+    dont_expressions = re.finditer(r"don't\(\)", all_data)
+    do_expressions = re.finditer(r"do\(\)", all_data)
+    dont_index = dont_expressions.__next__().start()
+    do_index = do_expressions.__next__().start()
+    total_value = 0
+    disabled = False
+    for expression in expressions:
+        index = expression.start()
+        if index > dont_index:
             try:
-                first, last = mulitpication_text.split(",")
-                first = int(first)
-                last = int(last)
-            except ValueError:
+                disabled = True
+                dont_index = dont_expressions.__next__().start()
+            except StopIteration:
+                dont_index = math.inf
                 pass
-            else:
-                total_number += (first * last)
-                index=start_index
-                multiply_sequences.append((first, last))
-        index += 1
-    print(multiply_sequences)
-    return total_number
+        if index > do_index:
+            try:
+                disabled = False
+                do_index = do_expressions.__next__().start()
+            except StopIteration:
+                do_index = math.inf
+        if not disabled:
+            first, last = expression.groups()
+            total_value += int(first) * int(last)
+    return total_value
 
 
 @timeexecution
