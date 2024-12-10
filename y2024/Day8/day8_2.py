@@ -2,6 +2,7 @@ import pathlib
 from Tools.tools import load_data_as_lines, load_data, load_data_as_int, timeexecution
 from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
+from math import gcd
 
 def check_antenna(data, antenoids):
     for antenoid in antenoids:
@@ -32,6 +33,7 @@ def get_my_answer():
                 antenna1 = locations[i]
                 antenna2 = locations[j]
                 dir = (antenna2[0]-antenna1[0], antenna2[1]-antenna1[1])
+                #print(gcd(*dir))
                 distance=0
                 while True:
                     antenoid = (antenna2[0]+dir[0]*distance, antenna2[1]+dir[1]*distance)
@@ -40,7 +42,7 @@ def get_my_answer():
                     else:
                         break
                     distance+=1
-    check_antenna(data, antenoids)
+    #check_antenna(data, antenoids)
     return len(antenoids)
 
 
