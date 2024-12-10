@@ -1,8 +1,5 @@
-<<<<<<< Updated upstream
-from y2024.Day10 import * 
-=======
-from y2024.Day9 import * 
->>>>>>> Stashed changes
+from y2024.Day10 import *
+from y2024.Day9 import *
 from y2024.Day8 import * 
 from y2024.Day7 import * 
 from y2024.Day6 import * 
