@@ -5,19 +5,21 @@ from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
 
 next_positions = {
-    "<": (-1, 0), ">":(1, 0), "^": (0,-1), "v":(0,1)
+    "<": (-1, 0), ">": (1, 0), "^": (0, -1), "v": (0, 1)
 }
 next_dir = {
     "<": "^", ">": "v", "^": ">", "v": "<"
 }
+
+
 def get_my_answer():
     data = load_data_as_lines(filepath, example=False)
-    mapping={}
-    current_pos = (0,0)
+    mapping = {}
+    current_pos = (0, 0)
     current_dir = "."
     for y in range(len(data)):
         for x in range(len(data[0])):
-            mapping[(x,y)] = data[y][x]
+            mapping[(x, y)] = data[y][x]
             if data[y][x] in ["<", ">", "^", "v"]:
                 current_pos = (x, y)
                 current_dir = data[y][x]
@@ -25,11 +27,13 @@ def get_my_answer():
     visited = set()
     visited.add(current_pos)
     while True:
-        if current_pos[0]==0 or current_pos[0]==len(data[0])-1 or current_pos[1]==0 or current_pos[1]==len(data)-1:
+        if current_pos[0] == 0 or current_pos[0] == len(data[0]) - 1 or current_pos[1] == 0 or current_pos[1] == len(
+                data) - 1:
             break
         if mapping[next_pos] == "#":
             current_dir = next_dir[current_dir]
-            next_pos = (current_pos[0] + next_positions[current_dir][0], current_pos[1] + next_positions[current_dir][1])
+            next_pos = (
+            current_pos[0] + next_positions[current_dir][0], current_pos[1] + next_positions[current_dir][1])
             continue
         current_pos = (current_pos[0] + next_positions[current_dir][0], current_pos[1] + next_positions[current_dir][1])
         visited.add(current_pos)
