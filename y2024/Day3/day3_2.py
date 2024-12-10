@@ -38,7 +38,7 @@ def get_my_answer():
 
 @timeexecution
 def execution():
-    submit_answer = False
+    submit_answer = True
     my_answer = get_my_answer()
     print(my_answer)
     this_day = int(str(filepath).split("\\")[-1][3:])
