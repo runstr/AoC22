@@ -21,28 +21,25 @@ def get_my_answer():
     while next_paths:
         path, direction, turns, moves = next_paths.pop(0)
         total_score = turns*1000 + moves
-        if cave_map[path] == "E":
-            if total_score<minimum_score:
-                minimum_score = total_score
-            continue
         if total_score > minimum_score:
+            continue
+        if cave_map[path] == "E":
+            if total_score < minimum_score:
+                minimum_score = total_score
             continue
         if (path, direction) in visited:
             if total_score > visited[(path, direction)]:
                 continue
         visited[(path, direction)] = total_score
-        for new_direction in [(1,0), (-1,0), (0,-1), (0,1)]:
-            if new_direction == (-direction[0], -direction[0]):
+        for dx, dy in [(1, 0), (-1, 0), (0, -1), (0, 1)]:
+            new_point = (path[0] + dx, path[1] + dy)
+            if (dx, dy) == (-direction[0], -direction[1]) or cave_map[new_point] == "#":
                 continue
-            new_point =(path[0]+new_direction[0], path[1]+new_direction[1])
-            if cave_map[new_point] == "#":
-                continue
-            if new_direction == direction:
-                new_turns = turns
+            if (dx, dy) == direction:
+                next_paths.append((new_point, (dx, dy), turns, moves + 1))
             else:
-                new_turns = turns+1
-            new_moves = moves+1
-            next_paths.append((new_point, new_direction, new_turns, new_moves))
+                next_paths.append((new_point, (dx, dy), turns+1, moves + 1))
+
     return minimum_score
 
 
