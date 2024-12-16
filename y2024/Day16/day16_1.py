@@ -5,6 +5,7 @@ from aocd import submit
 
 filepath = pathlib.Path(__file__).parent.resolve()
 
+
 def get_my_answer():
     data = load_data_as_lines(filepath, example=False)
     cave_map = {}
@@ -33,9 +34,8 @@ def run_bfs(cave_map, start_point, end_point):
             if total_score < minimum_score:
                 minimum_score = total_score
             continue
-        if (path, direction) in visited:
-            if total_score > visited[(path, direction)]:
-                continue
+        if (path, direction) in visited and visited[(path, direction)] < total_score:
+            continue
         visited[(path, direction)] = total_score
         for dx, dy in [(1, 0), (-1, 0), (0, -1), (0, 1)]:
             new_point = (path[0] + dx, path[1] + dy)
@@ -55,7 +55,8 @@ def check_difference(this_point, other_point):
     if dx == 0 or dy == 0:
         return minimum_difference
     else:
-        return minimum_difference +1000
+        return minimum_difference + 1000
+
 @timeexecution
 def execution():
     submit_answer = False
