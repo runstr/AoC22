@@ -15,7 +15,7 @@ def get_my_answer():
             cave_map[(x,y)] = data[y][x]
             if data[y][x] == "S":
                 start_point = (x, y)
-    visited = set()
+    visited = dict()
     next_paths = [(start_point, (1, 0), 0, 0)]
     minimum_score = math.inf
     while next_paths:
@@ -28,8 +28,9 @@ def get_my_answer():
         if total_score > minimum_score:
             continue
         if (path, direction) in visited:
-            continue
-        visited.add((path, direction))
+            if total_score > visited[(path, direction)]:
+                continue
+        visited[(path, direction)] = total_score
         for new_direction in [(1,0), (-1,0), (0,-1), (0,1)]:
             if new_direction == (-direction[0], -direction[0]):
                 continue
@@ -42,8 +43,6 @@ def get_my_answer():
                 new_turns = turns+1
             new_moves = moves+1
             next_paths.append((new_point, new_direction, new_turns, new_moves))
-
-
     return minimum_score
 
 
