@@ -2,11 +2,40 @@ import pathlib
 from Tools.tools import load_data_as_lines, load_data, load_data_as_int, timeexecution
 from aocd import submit
 filepath = pathlib.Path(__file__).parent.resolve()
-
+import functools
 
 def get_my_answer():
-    my_answer = load_data(filepath, example=True)
-    return my_answer
+    all_words = [0]
+    @functools.cache
+    def check_word(word):
+        if word == "":
+            return 1
+        if word[0] in patterns:
+            test_patterns = patterns[word[0]]
+        else:
+            return False
+        ans=0
+        for pattern in test_patterns:
+            if word.startswith(pattern):
+                ans += check_word(word[len(pattern):])
+
+
+        return ans
+
+    data = load_data(filepath, example=False)
+    a, b = data.split("\n\n")
+    patterns = {}
+    for i in a.split(", "):
+        try:
+            patterns[i[0]].append(i)
+        except:
+            patterns[i[0]] = [i]
+
+    list_words = b.split("\n")
+    all_words=0
+    for word in list_words:
+        all_words+= check_word(word)
+    return all_words
 
 
 @timeexecution
